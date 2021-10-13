@@ -1,19 +1,18 @@
 class Deque:
     def __init__(self, n: int) -> None:
-        self.queue = [None] * n
-        self.max_size = n
-        self.head = 0
-        self.tail = 0
-        self.queue_size = 0
+        self.queue, self.max_size = [None] * n, n
+        self.head = self.tail = self.queue_size = 0
 
+    @property
     def is_empty(self) -> bool:
         return self.queue_size == 0
 
+    @property
     def is_full(self) -> bool:
         return self.queue_size == self.max_size
 
     def push_back(self, value: int) -> bool:
-        if self.is_full():
+        if self.is_full:
             return False
 
         self.queue[self.tail] = value
@@ -22,7 +21,7 @@ class Deque:
         return True
 
     def push_front(self, value: int) -> bool:
-        if self.is_full():
+        if self.is_full:
             return False
 
         self.queue[self.head - 1] = value
@@ -31,7 +30,7 @@ class Deque:
         return True
 
     def pop_back(self) -> str:
-        if self.is_empty():
+        if self.is_empty:
             return 'error'
 
         value = self.queue[self.tail - 1]
@@ -41,7 +40,7 @@ class Deque:
         return str(value)
 
     def pop_front(self) -> str:
-        if self.is_empty():
+        if self.is_empty:
             return 'error'
 
         value = self.queue[self.head]
@@ -55,19 +54,20 @@ class Deque:
     ) -> 'list[str]':
 
         report = []
+        attribute_list = ['pop_front', 'pop_back', 'push_front', 'push_back']
+        pop_list = ['pop_front', 'pop_back']
+        push_list = ['push_front', 'push_back']
 
         for command in commands:
-            if 'pop_front' in command:
-                report.append(self.pop_front())
-            if 'pop_back' in command:
-                report.append(self.pop_back())
-            if 'push_front' in command and not self.push_front(
-                int(command[11:])
-            ):
-                report.append('error')
-            if 'push_back' in command and not self.push_back(
-                int(command[10:])
-            ):
-                report.append('error')
-
+            for element in attribute_list:
+                if element in command:
+                    if element in pop_list:
+                        attr = getattr(self, element)()
+                        report.append(attr)
+                    if element in push_list:
+                        attr = getattr(self, element)(
+                            int(command[len(element)+1:])
+                        )
+                        if not attr:
+                            report.append('error')
         return report
